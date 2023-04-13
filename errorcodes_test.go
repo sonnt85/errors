@@ -24,3 +24,15 @@ func doSomethingElse() error {
 	return New("failed to do something else")
 
 }
+
+func TestUpdate(t *testing.T) {
+	type ErrorCodes struct {
+		ErrorCode2000 ErrorCode `default:"2000"`
+		ErrorCode2001 ErrorCode `default:"2001"`
+		ErrorCode2002 ErrorCode `default:"2002"`
+		ErrorCode2003 ErrorCode `default:"2003"`
+	}
+	errs := new(ErrorCodes)
+	ErrorCodesUpdate(errs)
+	fmt.Printf("%+v", ErrorCodesMap())
+}

@@ -46,12 +46,15 @@ type ErrorCodes struct {
 	ServiceDiscoveryError     ErrorCode `default:"1021"`
 	DNSLookupError            ErrorCode `default:"1022"`
 	SSLCertificateError       ErrorCode `default:"1023"`
+	ConnectionRefused         ErrorCode `default:"1024"`
+	OptionsError              ErrorCode `default:"1025"`
 	UnknownError              ErrorCode `default:"9999"`
 }
 
 var messages map[ErrorCode]string
 
 var Errors *ErrorCodes
+var UserErrors interface{}
 
 // func camelToNormal(s string) string {
 // 	var buf bytes.Buffer
@@ -74,6 +77,25 @@ func init() {
 		fieldName := field.Name
 		fieldValue := reflect.ValueOf(*Errors).FieldByName(fieldName).Interface()
 		messages[fieldValue.(ErrorCode)] = strcase.ToDelimited(fieldName, ' ')
+	}
+}
+
+func ErrorCodesUpdate(errorCodeStruct interface{}) {
+	godefault.SetDefaults(errorCodeStruct)
+	val := reflect.ValueOf(errorCodeStruct)
+	if val.Kind() == reflect.Ptr {
+		val = val.Elem()
+	}
+	if val.Kind() != reflect.Struct {
+		return
+	}
+
+	for i := 0; i < val.NumField(); i++ {
+		field := val.Type().Field(i)
+		fieldValue := val.Field(i).Interface()
+		if ec, ok := fieldValue.(ErrorCode); ok {
+			messages[ec] = strcase.ToDelimited(field.Name, ' ')
+		}
 	}
 }
 
@@ -140,7 +162,7 @@ type withErrorCode struct {
 }
 
 func (w *withErrorCode) Error() string {
-	return fmt.Sprintf("[%d]%s: %s", w.code, w.msg, w.cause.Error())
+	return fmt.Sprintf("[%d]%s\n%s", w.code, w.msg, w.cause.Error())
 }
 
 func (w *withErrorCode) Cause() error { return w.cause }
