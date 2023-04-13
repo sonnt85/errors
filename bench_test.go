@@ -41,7 +41,7 @@ func BenchmarkErrors(b *testing.B) {
 		{1000, true},
 	}
 	for _, r := range runs {
-		part := "pkg/errors"
+		part := "sonnt85/errors"
 		if r.std {
 			part = "errors"
 		}
