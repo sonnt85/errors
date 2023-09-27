@@ -34,5 +34,6 @@ func TestUpdate(t *testing.T) {
 	}
 	errs := new(ErrorCodes)
 	ErrorCodesUpdate(errs)
-	fmt.Printf("%+v", ErrorCodesMap())
+	fmt.Printf("%#v\n", ErrorCodesMap())
+	fmt.Print(Json(GetStandardErrorCode(Errors.AccessDeniedError)))
 }
