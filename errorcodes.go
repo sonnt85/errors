@@ -116,7 +116,11 @@ func Init() {
 		field := errs.Field(i)
 		fieldName := field.Name
 		fieldValue := reflect.ValueOf(*Errors).FieldByName(fieldName).Interface()
-		messages[fieldValue.(ErrorCode)] = strcase.ToDelimited(fieldName, ' ')
+		errMsg := field.Tag.Get("errmsg")
+		if errMsg == "" {
+			errMsg = strcase.ToDelimited(fieldName, ' ')
+		}
+		messages[fieldValue.(ErrorCode)] = errMsg
 	}
 }
 
