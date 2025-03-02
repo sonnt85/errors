@@ -292,6 +292,8 @@ func (w *withErrorCode) Error() string {
 
 func (w *withErrorCode) Cause() error { return w.cause }
 
+func (w *withErrorCode) Message() string { return w.msg }
+
 // Unwrap provides compatibility for Go 1.13 error chains.
 func (w *withErrorCode) Unwrap() error { return w.cause }
 
