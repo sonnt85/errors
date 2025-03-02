@@ -326,6 +326,26 @@ func Code(err error) int {
 	return -1
 }
 
+func CodeStr(err error, minsize int, prefix ...string) string {
+	type code interface {
+		Code() int
+	}
+	if err != nil {
+		errcode, ok := err.(code)
+		if ok {
+			codeStr := fmt.Sprintf("%d", errcode.Code())
+			if len(codeStr) < minsize {
+				codeStr = fmt.Sprintf("%0*s", minsize, codeStr)
+			}
+			if len(prefix) > 0 {
+				return fmt.Sprintf("%s%s", prefix[0], codeStr)
+			}
+			return codeStr
+		}
+	}
+	return ""
+}
+
 func Message(err error) string {
 	type code interface {
 		Message() string

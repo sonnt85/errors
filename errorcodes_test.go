@@ -37,3 +37,26 @@ func TestUpdate(t *testing.T) {
 	fmt.Printf("%#v\n", ErrorCodesMap())
 	fmt.Print(Json(GetStandardErrorCode(Errors.AccessDeniedError)))
 }
+
+func TestCodeStr(t *testing.T) {
+	err := WithErrorCode(2000, doSomethingElse(), "failed to do something")
+	tests := []struct {
+		err     error
+		minsize int
+		prefix  string
+		want    string
+	}{
+		{err, 5, "ERR", "ERR02000"},
+		{err, 6, "", "002000"},
+		{err, 3, "", "2000"},
+		{nil, 5, "ERR", ""},
+	}
+
+	for _, tt := range tests {
+		t.Run(fmt.Sprintf("err: %v, minsize: %d, prefix: %s", tt.err, tt.minsize, tt.prefix), func(t *testing.T) {
+			if got := CodeStr(tt.err, tt.minsize, tt.prefix); got != tt.want {
+				t.Errorf("CodeStr() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
