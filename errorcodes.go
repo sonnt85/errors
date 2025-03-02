@@ -326,6 +326,19 @@ func Code(err error) int {
 	return -1
 }
 
+func Message(err error) string {
+	type code interface {
+		Message() string
+	}
+	if err != nil {
+		errcode, ok := err.(code)
+		if ok {
+			return errcode.Message()
+		}
+	}
+	return ""
+}
+
 func Json(err error, msg_is_json ...bool) string {
 	type code interface {
 		Json(msg_is_json ...bool) string
