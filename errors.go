@@ -286,3 +286,9 @@ func Cause(err error) error {
 	}
 	return err
 }
+
+func Panic(err error) {
+	if err != nil {
+		panic(WithStack(err))
+	}
+}
