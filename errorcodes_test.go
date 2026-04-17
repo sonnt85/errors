@@ -6,14 +6,18 @@ import (
 )
 
 func TestErrorCodes(t *testing.T) {
-	// fmt.Print(MapErrorCode())
 	err := doSomething()
-	if err != nil {
-		et := err.(*withStack)
-		// x := et.Error()
-		et.stack.StackTrace()
-		fmt.Printf("%+v", err)
+	if err == nil {
+		t.Fatal("doSomething() returned nil, want non-nil error")
 	}
+	et, ok := err.(*withStack)
+	if !ok {
+		t.Fatalf("doSomething() error type = %T, want *withStack", err)
+	}
+	if len(et.stack.StackTrace()) == 0 {
+		t.Error("StackTrace() returned empty slice")
+	}
+	t.Logf("%+v", err)
 }
 
 func doSomething() error {
@@ -22,7 +26,6 @@ func doSomething() error {
 
 func doSomethingElse() error {
 	return New("failed to do something else")
-
 }
 
 func TestUpdate(t *testing.T) {
@@ -34,8 +37,12 @@ func TestUpdate(t *testing.T) {
 	}
 	errs := new(ErrorCodes)
 	ErrorCodesUpdate(errs)
-	fmt.Printf("%#v\n", ErrorCodesMap())
-	fmt.Print(Json(GetStandardErrorCode(Errors.AccessDeniedError)))
+	if len(ErrorCodesMap()) == 0 {
+		t.Error("ErrorCodesMap() is empty after ErrorCodesUpdate")
+	}
+	if GetStandardErrorCode(Errors.AccessDeniedError) == nil {
+		t.Error("GetStandardErrorCode(AccessDeniedError) returned nil")
+	}
 }
 
 func TestCodeStr(t *testing.T) {
